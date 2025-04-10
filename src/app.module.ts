@@ -5,9 +5,11 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ArticlesModule } from './articles/articles.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { EcardTemplatesModule } from './ecard-templates/ecard-templates.module';
+import { EcardComponentsModule } from './ecard-components/ecard-components.module';
 
 @Module({
-  imports: [PrismaModule, ArticlesModule, UsersModule, AuthModule],
+  imports: [PrismaModule, ArticlesModule, UsersModule, AuthModule, EcardTemplatesModule, EcardComponentsModule],
   controllers: [AppController],
   providers: [AppService],
 })

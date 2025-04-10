@@ -38,3 +38,38 @@ model User {
   updatedAt DateTime  @updatedAt
   articles  Article[]
 }
+
+
+model ECardTemplate {
+  id              String           @id @default(uuid())
+  sku             String           @unique
+  name            String
+  description     String
+  cost            Int
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @default(now()) @updatedAt
+  includedOptions String[]         @default([])
+  components      ECardComponent[]
+  imageURL        String?
+  visible         Boolean          @default(true)
+
+  @@index([sku])
+}
+
+
+model ECardComponent {
+  id               String        @id @default(uuid())
+  key              String?       @default(uuid())
+  ecardComponentID String
+  ecardID          String
+  ecard            ECardTemplate @relation(references: [id], fields: [ecardID])
+  label            String?       @default("")
+  editable         Boolean?      @default(false)
+  default          String?       @default("")
+  customStyles     String?       @default("")
+  options          String?       @default("")
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @default(now()) @updatedAt
+
+  @@index([key])
+}
