@@ -59,7 +59,7 @@ model ECardTemplate {
 
 model ECardComponent {
   id               String        @id @default(uuid())
-  key              String?       @default(uuid())
+  key              String        @unique
   ecardComponentID String
   ecardID          String
   ecard            ECardTemplate @relation(references: [id], fields: [ecardID])
@@ -70,6 +70,7 @@ model ECardComponent {
   options          String?       @default("")
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @default(now()) @updatedAt
+  order Int @default(1)
 
   @@index([key])
 }

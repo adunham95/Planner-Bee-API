@@ -16,7 +16,9 @@ export class EcardTemplatesService {
   }
 
   findAll() {
-    return this.prisma.eCardTemplate.findMany();
+    return this.prisma.eCardTemplate.findMany({
+      include: { components: true },
+    });
   }
 
   findAvailable() {

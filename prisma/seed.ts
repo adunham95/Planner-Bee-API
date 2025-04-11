@@ -76,6 +76,69 @@ async function main() {
     },
   });
 
+  const eCardTemplateOne = await prisma.eCardTemplate.upsert({
+    where: { sku: 'TACO' },
+    update: {},
+    create: {
+      sku: 'TACO',
+      name: 'Taco Tuesday',
+      description: '',
+      cost: 999,
+      visible: false,
+    },
+  });
+
+  await prisma.eCardComponent.upsert({
+    where: { key: 'TACO-banner' },
+    update: {},
+    create: {
+      key: 'TACO-banner',
+      ecardID: eCardTemplateOne.id,
+      ecardComponentID: 'banner',
+      label: 'Banner',
+      editable: false,
+    },
+  });
+
+  await prisma.eCardComponent.upsert({
+    where: { key: 'TACO-message' },
+    update: {},
+    create: {
+      key: 'TACO-message',
+      ecardID: eCardTemplateOne.id,
+      ecardComponentID: 'message',
+      label: 'Message',
+      editable: true,
+      default: "It's Taco Tuesday time to guac and roll!.",
+    },
+  });
+
+  await prisma.eCardComponent.upsert({
+    where: { key: 'TACO-headline' },
+    update: {},
+    create: {
+      key: 'TACO-headline',
+      ecardID: eCardTemplateOne.id,
+      ecardComponentID: 'title',
+      label: 'Headline',
+      editable: true,
+      default: '🌮 Its Taco Tuesday! 🌮',
+    },
+  });
+
+  await prisma.eCardComponent.upsert({
+    where: { key: 'TACO-color' },
+    update: {},
+    create: {
+      key: 'TACO-color',
+      ecardID: eCardTemplateOne.id,
+      ecardComponentID: 'color-input',
+      label: 'Color',
+      editable: true,
+      default: '#388E3C',
+    },
+  });
+
   console.log({ user1, user2, post1, post2, post3 });
 }
 
