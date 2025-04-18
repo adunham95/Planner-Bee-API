@@ -7,9 +7,22 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { EcardTemplatesModule } from './ecard-templates/ecard-templates.module';
 import { EcardComponentsModule } from './ecard-components/ecard-components.module';
+import { CategoryModule } from './category/category.module';
+import { EcardsModule } from './ecards/ecards.module';
+import { OptionItemsModule } from './option-items/option-items.module';
 
 @Module({
-  imports: [PrismaModule, ArticlesModule, UsersModule, AuthModule, EcardTemplatesModule, EcardComponentsModule],
+  imports: [
+    PrismaModule,
+    ArticlesModule,
+    UsersModule,
+    AuthModule,
+    EcardTemplatesModule,
+    EcardComponentsModule,
+    CategoryModule,
+    EcardsModule,
+    OptionItemsModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

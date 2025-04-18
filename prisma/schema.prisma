@@ -8,13 +8,11 @@ generator client {
   provider = "prisma-client-js"
 }
 
-
 datasource db {
   provider  = "postgresql"
   url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
-
 
 model Article {
   id          Int      @id @default(autoincrement())
@@ -24,10 +22,9 @@ model Article {
   published   Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-    author      User?    @relation(fields: [authorId], references: [id])
+  author      User?    @relation(fields: [authorId], references: [id])
   authorId    Int?
 }
-
 
 model User {
   id        Int       @id @default(autoincrement())
@@ -37,8 +34,8 @@ model User {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   articles  Article[]
+  myCard    ECard[]
 }
-
 
 model ECardTemplate {
   id              String           @id @default(uuid())
@@ -52,10 +49,13 @@ model ECardTemplate {
   components      ECardComponent[]
   imageURL        String?
   visible         Boolean          @default(true)
+  premium         Boolean          @default(false)
+  featuredItem    FeaturedItem?
+  categories      Category[]       @relation("ECardTemplateCategories")
+  eCards          ECard[]
 
   @@index([sku])
 }
-
 
 model ECardComponent {
   id               String        @id @default(uuid())
@@ -70,7 +70,61 @@ model ECardComponent {
   options          String?       @default("")
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @default(now()) @updatedAt
-  order Int @default(1)
+  order            Int           @default(1)
 
   @@index([key])
+}
+
+model FeaturedItem {
+  id            String         @id @default(uuid())
+  ecardID       String         @unique
+  ecardTemplate ECardTemplate? @relation(references: [id], fields: [ecardID])
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @default(now()) @updatedAt
+}
+
+model Category {
+  id             String          @id @default(uuid())
+  name           String          @unique
+  imageURL       String
+  eCardTemplates ECardTemplate[] @relation("ECardTemplateCategories")
+}
+
+model ECard {
+  id               String        @id @default(uuid())
+  senderEmail      String?       @default("")
+  senderID         Int?
+  sender           User?         @relation(references: [id], fields: [senderID])
+  deliveryDate     DateTime?
+  eCardNumber      String?       @default("")
+  eCardTemplateSku String
+  eCardTemplate    ECardTemplate @relation(references: [sku], fields: [eCardTemplateSku])
+  recipients       Recipient[]
+  options          OptionItem[]
+  status           String?       @default("draft")
+
+  @@index([senderID, eCardNumber])
+}
+
+model OptionItem {
+  id        String   @id @default(uuid())
+  eCardId   String?
+  eCard     ECard?   @relation(references: [id], fields: [eCardId])
+  name      String?
+  value     String
+  key       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([eCardId])
+}
+
+model Recipient {
+  id        String  @id @default(uuid())
+  firstName String?
+  lastName  String?
+  email     String?
+  phone     String?
+  eCardID   String?
+  eCard     ECard?  @relation(references: [id], fields: [eCardID])
 }

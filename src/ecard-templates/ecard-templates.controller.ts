@@ -32,6 +32,11 @@ export class EcardTemplatesController {
     return this.ecardTemplatesService.findOne(id);
   }
 
+  @Get('sku/:sku')
+  findOneBySku(@Param('sku') sku: string) {
+    return this.ecardTemplatesService.findOneBySku(sku);
+  }
+
   @Patch(':id')
   update(
     @Param('id') id: string,

@@ -20,8 +20,11 @@ export class EcardTemplateEntity implements ECardTemplate {
   @ApiProperty({ required: false, nullable: true })
   imageURL: string | null;
 
-  @ApiProperty({ required: false, default: false })
+  @ApiProperty({ required: false, default: true })
   visible: boolean;
+
+  @ApiProperty({ required: false, default: false })
+  premium: boolean;
 
   @ApiProperty()
   createdAt: Date;
