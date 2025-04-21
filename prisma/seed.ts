@@ -536,6 +536,58 @@ async function main() {
     },
   });
 
+  await prisma.eCardTemplate.upsert({
+    where: { sku: 'KBDY' },
+    update: {},
+    create: {
+      sku: 'KBDY',
+      name: 'Kids Birthday',
+      description: '',
+      cost: 0,
+      visible: true,
+      components: {
+        createMany: {
+          data: [
+            {
+              key: 'KBDY-banner',
+              ecardComponentID: 'banner',
+              label: 'Banner',
+              editable: false,
+              order: 2,
+            },
+            {
+              key: 'KBDY-headline',
+              ecardComponentID: 'title',
+              label: 'Headline',
+              editable: true,
+              default: "You're Invited to a Birthday Bash! 🎉",
+              order: 3,
+            },
+            {
+              key: 'KBDY-message',
+              ecardComponentID: 'message',
+              label: 'Invitation Message',
+              editable: true,
+              default:
+                "Come celebrate with us! Join the party, enjoy some cake, and help make this birthday unforgettable. We can't wait to see you there!",
+              order: 4,
+            },
+
+            {
+              key: 'KBDY-color',
+              ecardComponentID: 'color-lost',
+              label: 'Color',
+              editable: true,
+              default: '#D81B60',
+              order: 1,
+              options: ['#FF6B6B', '#4ECDC4', '#FFE66D', '#1A535C', '#F7FFF7'],
+            },
+          ],
+        },
+      },
+    },
+  });
+
   console.log({ user1, user2, post1, post2, post3 });
 }
 

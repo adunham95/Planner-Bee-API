@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateEcardComponentDto {
   @IsString()
@@ -38,5 +38,6 @@ export class CreateEcardComponentDto {
   @IsOptional()
   @IsString()
   @ApiProperty()
-  options?: string;
+  @IsArray()
+  options?: string[];
 }

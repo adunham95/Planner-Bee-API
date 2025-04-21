@@ -3,23 +3,32 @@ import { CreateEcardDto } from './dto/create-ecard.dto';
 import { UpdateEcardDto } from './dto/update-ecard.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { generateOrderNumber } from 'src/utils/gnerateOrderNumber';
+import { CreateOptionItemDto } from 'src/option-items/dto/create-option-item.dto';
 
 @Injectable()
 export class EcardsService {
   constructor(private prisma: PrismaService) {}
-  create(createEcardDto: CreateEcardDto) {
+
+  async create(
+    createEcardDto: CreateEcardDto,
+    createOptionItemDto?: CreateOptionItemDto[],
+  ) {
     createEcardDto.eCardNumber = generateOrderNumber('ECARD');
 
-    const optionItems = createEcardDto.options;
-
-    delete createEcardDto.options;
-
-    const eCard = this.prisma.eCard.create({
+    const eCard = await this.prisma.eCard.create({
       data: createEcardDto,
     });
 
-    const ecardOptions = this.prisma.optionItem.createMany({
-      data: [],
+    const optionItems =
+      createOptionItemDto?.map((opt) => {
+        return {
+          ...opt,
+          eCardId: eCard.id,
+        };
+      }) || [];
+
+    await this.prisma.optionItem.createMany({
+      data: optionItems,
     });
 
     return eCard;
@@ -30,10 +39,14 @@ export class EcardsService {
   }
 
   findOne(eCardNumber: string) {
-    return this.prisma.eCard.findFirst({ where: { eCardNumber } });
+    return this.prisma.eCard.findFirst({
+      where: { eCardNumber },
+      include: { options: true },
+    });
   }
 
   update(id: string, updateEcardDto: UpdateEcardDto) {
+    console.log(updateEcardDto);
     return `This action updates a #${id} ecard`;
   }
 

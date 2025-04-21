@@ -8,16 +8,19 @@ import {
   Delete,
 } from '@nestjs/common';
 import { EcardsService } from './ecards.service';
-import { CreateEcardDto } from './dto/create-ecard.dto';
 import { UpdateEcardDto } from './dto/update-ecard.dto';
+import { CreateEcardBodyDto } from './dto/create-ecard-body.dto';
 
 @Controller('ecards')
 export class EcardsController {
   constructor(private readonly ecardsService: EcardsService) {}
 
   @Post()
-  create(@Body() createEcardDto: CreateEcardDto) {
-    return this.ecardsService.create(createEcardDto);
+  create(@Body() createEcardDto: CreateEcardBodyDto) {
+    const options = createEcardDto.options;
+    delete createEcardDto.options;
+
+    return this.ecardsService.create(createEcardDto, options);
   }
 
   @Get()
