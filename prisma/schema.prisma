@@ -67,10 +67,11 @@ model ECardComponent {
   editable         Boolean?      @default(false)
   default          String?       @default("")
   customStyles     String?       @default("")
-  options          String[]     @default([])
+  options          String[]      @default([])
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @default(now()) @updatedAt
   order            Int           @default(1)
+  OptionItem       OptionItem[]
 
   @@index([key])
 }
@@ -107,14 +108,15 @@ model ECard {
 }
 
 model OptionItem {
-  id        String   @id @default(uuid())
-  eCardId   String?
-  eCard     ECard?   @relation(references: [id], fields: [eCardId])
-  name      String?
-  value     String
-  key       String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String         @id @default(uuid())
+  eCardId        String?
+  eCard          ECard?         @relation(references: [id], fields: [eCardId])
+  name           String?
+  value          String
+  key            String
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  eCardComponent ECardComponent @relation(fields: [key], references: [key])
 
   @@index([eCardId])
 }

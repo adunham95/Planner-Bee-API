@@ -25,6 +25,12 @@ export class EcardTemplatesService {
     return this.prisma.eCardTemplate.findMany({ where: { visible: true } });
   }
 
+  findFeatured() {
+    return this.prisma.featuredItem.findMany({
+      include: { ecardTemplate: true },
+    });
+  }
+
   findOneBySku(sku: string) {
     return this.prisma.eCardTemplate.findFirst({
       where: { sku },

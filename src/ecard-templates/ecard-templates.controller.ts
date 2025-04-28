@@ -27,6 +27,11 @@ export class EcardTemplatesController {
     return this.ecardTemplatesService.findAll();
   }
 
+  @Get('/featured')
+  findFeatured() {
+    return this.ecardTemplatesService.findFeatured();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.ecardTemplatesService.findOne(id);

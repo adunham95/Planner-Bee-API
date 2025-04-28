@@ -38,10 +38,16 @@ export class EcardsService {
     return this.prisma.eCard.findMany();
   }
 
-  findOne(eCardNumber: string) {
+  async findOne(eCardNumber: string) {
     return this.prisma.eCard.findFirst({
       where: { eCardNumber },
-      include: { options: true },
+      include: {
+        options: {
+          include: {
+            eCardComponent: { select: { ecardComponentID: true, order: true } },
+          },
+        },
+      },
     });
   }
 

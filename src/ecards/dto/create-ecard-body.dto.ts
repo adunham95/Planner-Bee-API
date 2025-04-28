@@ -16,6 +16,7 @@ export class CreateEcardBodyDto {
   senderEmail: string;
 
   @IsDateString()
+  @IsOptional()
   @ApiProperty()
   deliveryDate?: Date;
 
