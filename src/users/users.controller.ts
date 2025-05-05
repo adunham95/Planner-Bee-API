@@ -8,6 +8,7 @@ import {
   Delete,
   ParseIntPipe,
   UseGuards,
+  BadRequestException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -20,6 +21,7 @@ import {
 } from '@nestjs/swagger';
 import { UserEntity } from './entities/user.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { Prisma } from '@prisma/client';
 
 @Controller('users')
 @ApiTags('Users')
@@ -29,11 +31,20 @@ export class UsersController {
   @Post()
   @ApiCreatedResponse({ type: UserEntity })
   async create(@Body() createUserDto: CreateUserDto) {
-    const user = await this.usersService.create(createUserDto);
-    return new UserEntity({
-      ...user,
-      name: user.name ?? undefined, // replaces null with undefined
-    });
+    try {
+      const user = await this.usersService.create(createUserDto);
+      return new UserEntity({
+        ...user,
+        name: user.name ?? undefined, // replaces null with undefined
+      });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError) {
+        // The .code property can be accessed in a type-safe manner
+        if (e.code === 'P2002') {
+          throw new BadRequestException('User already exists');
+        }
+      }
+    }
   }
 
   @Get()

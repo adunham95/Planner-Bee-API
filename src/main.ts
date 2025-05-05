@@ -19,8 +19,8 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   const config = new DocumentBuilder()
-    .setTitle('Median')
-    .setDescription('The Median API description')
+    .setTitle('Planner Bee')
+    .setDescription('The Planner Bee Application API')
     .setVersion('0.1')
     .addBearerAuth()
     .build();
