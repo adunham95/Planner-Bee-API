@@ -42,4 +42,11 @@ export class UsersService {
   remove(id: number) {
     return this.prisma.user.delete({ where: { id } });
   }
+
+  findByEmail(email: string, includeResetToken = false) {
+    return this.prisma.user.findFirst({
+      where: { email },
+      include: { resetToken: includeResetToken },
+    });
+  }
 }

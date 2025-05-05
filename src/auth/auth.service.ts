@@ -3,21 +3,32 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { PrismaService } from './../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthEntity } from './entity/auth.entity';
 import * as bcrypt from 'bcrypt';
+import { UsersService } from 'src/users/users.service';
+import { User } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
+import {
+  generateLoginToken,
+  generateResetTokenString,
+} from 'src/utils/generateLoginToken';
+import { getTimeFifteenMinutesFromNow } from 'src/utils/timeFuntions';
 
+interface Payload {
+  userId: number;
+}
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private userService: UsersService,
   ) {}
 
   async login(email: string, password: string): Promise<AuthEntity> {
     // Step 1: Fetch a user with the given email
-    const user = await this.prisma.user.findUnique({ where: { email: email } });
+    const user = await this.userService.findByEmail(email);
 
     // If no user is found, throw an error
     if (!user) {
@@ -39,5 +50,107 @@ export class AuthService {
     return {
       accessToken: this.jwtService.sign({ userId: user.id }),
     };
+  }
+
+  async resetFromToken(
+    email: string,
+    password: string,
+    resetToken: string,
+  ): Promise<AuthEntity> {
+    // Step 1: Fetch a user with the given email
+    const user = await this.userService.findByEmail(email, true);
+
+    // If no user is found, throw an error
+    if (!user) {
+      throw new NotFoundException(`No user found for email: ${email}`);
+    }
+
+    const isTokenValid = await bcrypt.compare(
+      resetToken,
+      user.resetToken?.token || '',
+    );
+
+    if (!isTokenValid) {
+      throw new UnauthorizedException('Invalid Token');
+    }
+
+    // If password does not match, throw an error
+    if (!isTokenValid) {
+      throw new UnauthorizedException('Invalid password');
+    }
+
+    // Step 3: Generate a JWT containing the user's ID and return it
+    return {
+      accessToken: this.jwtService.sign({ userId: user.id }),
+    };
+  }
+
+  async getUserFromAccessToken(accessToken: string): Promise<User | null> {
+    const payload: Payload = this.jwtService.decode(accessToken);
+
+    if (!payload) {
+      throw new UnauthorizedException('No data');
+    }
+
+    const user = await this.userService.findOne(payload.userId);
+
+    return user;
+  }
+
+  async getTokenData(token: string): Promise<AuthEntity> {
+    const tokenData = await this.prisma.loginToken.findUnique({
+      where: { token },
+    });
+
+    if (tokenData === null || !tokenData.userID) {
+      throw new UnauthorizedException('No data');
+    }
+
+    return {
+      accessToken: this.jwtService.sign({ userId: tokenData.userID }),
+    };
+  }
+
+  async generateToken(userID: number): Promise<{ loginToken: string }> {
+    const loginToken = generateLoginToken();
+    await this.prisma.loginToken.create({
+      data: {
+        userID,
+        token: loginToken,
+        expirationDate: getTimeFifteenMinutesFromNow(),
+      },
+    });
+
+    return {
+      loginToken,
+    };
+  }
+
+  async generateResetToken(
+    email: string,
+  ): Promise<{ success: boolean; token?: string }> {
+    const resetToken = await generateResetTokenString();
+
+    const user = await this.userService.findByEmail(email);
+
+    if (!user || user === null) {
+      console.log('No User Found');
+      return { success: false };
+    }
+
+    await this.prisma.resetToken.upsert({
+      where: { userID: user.id },
+      update: {
+        token: resetToken.hashedToken,
+        expirationDate: getTimeFifteenMinutesFromNow(),
+      },
+      create: {
+        userID: user.id,
+        token: resetToken.hashedToken,
+        expirationDate: getTimeFifteenMinutesFromNow(),
+      },
+    });
+
+    return { success: true, token: resetToken.token };
   }
 }

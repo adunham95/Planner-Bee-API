@@ -27,14 +27,37 @@ model Article {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  name      String
-  email     String    @unique
-  password  String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  articles  Article[]
-  myCard    ECard[]
+  id            Int          @id @default(autoincrement())
+  name          String
+  email         String       @unique
+  password      String
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  accountStatus String      @default("active")
+  articles      Article[]
+  myCard        ECard[]
+  loginTokens   LoginToken[]
+  resetToken    ResetToken?
+}
+
+model LoginToken {
+  id             Int      @id @default(autoincrement())
+  token          String @unique
+  userID         Int
+  user           User     @relation(fields: [userID], references: [id])
+  expirationDate DateTime @default(now())
+
+  @@index([token])
+}
+
+model ResetToken {
+  id             Int      @id @default(autoincrement())
+  token          String @unique
+  userID         Int      @unique
+  user           User     @relation(fields: [userID], references: [id])
+  expirationDate DateTime @default(now())
+
+  @@index([token])
 }
 
 model ECardTemplate {
