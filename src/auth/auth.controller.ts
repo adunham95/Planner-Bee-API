@@ -1,6 +1,15 @@
-import { Body, Controller, Get, Param, Post, Req, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AuthEntity } from './entity/auth.entity';
 import {
   InitiatePasswordResetDto,
@@ -9,6 +18,7 @@ import {
 } from './dto/login.dto';
 import { Request, Response } from 'express';
 import { UserEntity } from 'src/users/entities/user.entity';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -34,18 +44,9 @@ export class AuthController {
 
   @Get('token/:token')
   @ApiOkResponse({ type: AuthEntity })
-  async loginToken(
-    @Param('token') token: string,
-    @Res({ passthrough: true }) response: Response,
-  ) {
+  async loginToken(@Param('token') token: string) {
     const { accessToken } = await this.authService.getTokenData(token);
-    console.log({ accessToken, secure: process.env.NODE_ENV === 'production' });
-    response.cookie('accessToken', accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 day
-    });
+    console.log({ accessToken });
     return { accessToken };
   }
 
@@ -63,25 +64,27 @@ export class AuthController {
   }
 
   @Post('reset-password')
-  async requestPassword(@Body() { password, token, email }: PasswordResetDto) {
-    return this.authService.resetFromToken(email, password, token);
+  async requestPassword(@Body() { password, token }: PasswordResetDto) {
+    return this.authService.resetFromToken(password, token);
   }
 
-  @Post('user')
-  @ApiOkResponse({ type: AuthEntity })
-  async user(@Req() req: Request) {
-    const accessToken = (req.cookies?.accessToken as string) || null;
+  @Get('profile')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOkResponse({ type: UserEntity })
+  user(@Req() req: Request) {
+    return new UserEntity(req.user);
+  }
 
-    console.log(accessToken);
-
-    if (!accessToken) return false;
-
-    const user = await this.authService.getUserFromAccessToken(accessToken);
-
-    console.log(user);
-
-    if (!user) return null;
-
-    return new UserEntity(user);
+  @Get('logout')
+  // @ApiOkResponse({type: })
+  logout(@Req() req: Request, @Res({ passthrough: true }) response: Response) {
+    response.cookie('accessToken', '', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: -1,
+    });
+    return { success: true };
   }
 }

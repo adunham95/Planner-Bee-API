@@ -53,35 +53,25 @@ export class AuthService {
   }
 
   async resetFromToken(
-    email: string,
     password: string,
     resetToken: string,
   ): Promise<AuthEntity> {
     // Step 1: Fetch a user with the given email
-    const user = await this.userService.findByEmail(email, true);
+    const token = await this.prisma.resetToken.findFirst({
+      where: { token: resetToken },
+    });
 
-    // If no user is found, throw an error
-    if (!user) {
-      throw new NotFoundException(`No user found for email: ${email}`);
-    }
+    // TODO check expiration on token
 
-    const isTokenValid = await bcrypt.compare(
-      resetToken,
-      user.resetToken?.token || '',
-    );
-
-    if (!isTokenValid) {
+    if (!token) {
       throw new UnauthorizedException('Invalid Token');
     }
 
-    // If password does not match, throw an error
-    if (!isTokenValid) {
-      throw new UnauthorizedException('Invalid password');
-    }
+    await this.userService.update(token.userID, { password });
 
     // Step 3: Generate a JWT containing the user's ID and return it
     return {
-      accessToken: this.jwtService.sign({ userId: user.id }),
+      accessToken: this.jwtService.sign({ userId: token.userID }),
     };
   }
 
@@ -93,6 +83,8 @@ export class AuthService {
     }
 
     const user = await this.userService.findOne(payload.userId);
+
+    console.log('Get user from token', user, payload);
 
     return user;
   }
@@ -141,12 +133,12 @@ export class AuthService {
     await this.prisma.resetToken.upsert({
       where: { userID: user.id },
       update: {
-        token: resetToken.hashedToken,
+        token: resetToken.token,
         expirationDate: getTimeFifteenMinutesFromNow(),
       },
       create: {
         userID: user.id,
-        token: resetToken.hashedToken,
+        token: resetToken.token,
         expirationDate: getTimeFifteenMinutesFromNow(),
       },
     });
