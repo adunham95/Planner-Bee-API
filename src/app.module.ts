@@ -10,6 +10,7 @@ import { EcardComponentsModule } from './ecard-components/ecard-components.modul
 import { CategoryModule } from './category/category.module';
 import { EcardsModule } from './ecards/ecards.module';
 import { OptionItemsModule } from './option-items/option-items.module';
+import { ShopModule } from './shop/shop.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { OptionItemsModule } from './option-items/option-items.module';
     CategoryModule,
     EcardsModule,
     OptionItemsModule,
+    ShopModule,
   ],
   controllers: [AppController],
   providers: [AppService],

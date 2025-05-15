@@ -6,26 +6,43 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { EcardsService } from './ecards.service';
 import { UpdateEcardDto } from './dto/update-ecard.dto';
 import { CreateEcardBodyDto } from './dto/create-ecard-body.dto';
+import { AuthToken } from 'src/auth/auth.decorator';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { AuthService } from 'src/auth/auth.service';
 
 @Controller('ecards')
 export class EcardsController {
-  constructor(private readonly ecardsService: EcardsService) {}
+  constructor(
+    private readonly ecardsService: EcardsService,
+    private readonly authService: AuthService,
+  ) {}
 
   @Post()
-  create(@Body() createEcardDto: CreateEcardBodyDto) {
+  create(
+    @Body() createEcardDto: CreateEcardBodyDto,
+    @AuthToken() token: string | undefined,
+  ) {
+    console.log({ token });
     const options = createEcardDto.options;
     delete createEcardDto.options;
 
-    return this.ecardsService.create(createEcardDto, options);
+    return this.ecardsService.create(createEcardDto, options, token);
   }
 
   @Get()
-  findAll() {
-    return this.ecardsService.findAll();
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async findAll(@AuthToken() token: string | undefined) {
+    if (!token) throw new UnauthorizedException();
+    const user = await this.authService.getUserFromAccessToken(token);
+    return this.ecardsService.findAllUsers(user?.id, user?.email);
   }
 
   @Get(':eCardNumber')

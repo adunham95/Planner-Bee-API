@@ -1,11 +1,23 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsEmail, IsOptional, IsString } from 'class-validator';
+import {
+  IsDateString,
+  IsEmail,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateEcardDto {
   @IsString()
   @IsEmail()
+  @IsOptional()
   @ApiProperty()
   senderEmail: string;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiProperty()
+  senderID: number;
 
   @IsDateString()
   @ApiProperty()

@@ -3,6 +3,7 @@ import { Type } from 'class-transformer';
 import {
   IsDateString,
   IsEmail,
+  IsNumber,
   IsOptional,
   IsString,
   ValidateNested,
@@ -12,8 +13,14 @@ import { CreateOptionItemDto } from 'src/option-items/dto/create-option-item.dto
 export class CreateEcardBodyDto {
   @IsString()
   @IsEmail()
+  @IsOptional()
   @ApiProperty()
   senderEmail: string;
+
+  @IsNumber()
+  @IsOptional()
+  @ApiProperty()
+  senderID: number;
 
   @IsDateString()
   @IsOptional()

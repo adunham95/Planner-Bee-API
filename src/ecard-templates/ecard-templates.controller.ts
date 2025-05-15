@@ -32,6 +32,11 @@ export class EcardTemplatesController {
     return this.ecardTemplatesService.findFeatured();
   }
 
+  @Get('/available')
+  findAvailable() {
+    return this.ecardTemplatesService.findAvailable();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.ecardTemplatesService.findOne(id);
@@ -53,10 +58,5 @@ export class EcardTemplatesController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.ecardTemplatesService.remove(id);
-  }
-
-  @Get('available')
-  findAvailable() {
-    return this.ecardTemplatesService.findAvailable();
   }
 }

@@ -15,7 +15,7 @@ import {
 } from 'src/utils/generateLoginToken';
 import { getTimeFifteenMinutesFromNow } from 'src/utils/timeFuntions';
 
-interface Payload {
+export interface JwtPayload {
   userId: number;
 }
 @Injectable()
@@ -76,7 +76,8 @@ export class AuthService {
   }
 
   async getUserFromAccessToken(accessToken: string): Promise<User | null> {
-    const payload: Payload = this.jwtService.decode(accessToken);
+    console.log('get user from access token', accessToken);
+    const payload: JwtPayload = this.jwtService.decode(accessToken);
 
     if (!payload) {
       throw new UnauthorizedException('No data');

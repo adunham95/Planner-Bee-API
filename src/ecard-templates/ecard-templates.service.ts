@@ -22,7 +22,10 @@ export class EcardTemplatesService {
   }
 
   findAvailable() {
-    return this.prisma.eCardTemplate.findMany({ where: { visible: true } });
+    return this.prisma.eCardTemplate.findMany({
+      where: { visible: true },
+      include: { components: true, categories: true },
+    });
   }
 
   findFeatured() {

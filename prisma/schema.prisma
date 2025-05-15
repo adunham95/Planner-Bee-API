@@ -126,6 +126,7 @@ model ECard {
   recipients       Recipient[]
   options          OptionItem[]
   status           String?       @default("draft")
+  isCustom Boolean @default(true)
 
   @@index([senderID, eCardNumber])
 }
