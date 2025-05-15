@@ -11,6 +11,8 @@ import { CategoryModule } from './category/category.module';
 import { EcardsModule } from './ecards/ecards.module';
 import { OptionItemsModule } from './option-items/option-items.module';
 import { ShopModule } from './shop/shop.module';
+import { StripeModule } from './stripe/stripe.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { ShopModule } from './shop/shop.module';
     EcardsModule,
     OptionItemsModule,
     ShopModule,
+    StripeModule.forRootAsync(),
+    ConfigModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],
