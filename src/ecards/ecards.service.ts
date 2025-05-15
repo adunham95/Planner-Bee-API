@@ -6,6 +6,7 @@ import { generateOrderNumber } from 'src/utils/gnerateOrderNumber';
 import { CreateOptionItemDto } from 'src/option-items/dto/create-option-item.dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from 'src/auth/auth.service';
+import { CreateRecipientDto } from 'src/recipients/dto/create-recipient.dto';
 
 @Injectable()
 export class EcardsService {
@@ -17,9 +18,11 @@ export class EcardsService {
   async create(
     createEcardDto: CreateEcardDto,
     createOptionItemDto?: CreateOptionItemDto[],
+    createRecipientsDto?: CreateRecipientDto[],
     accessToken?: string,
   ) {
     createEcardDto.eCardNumber = generateOrderNumber('ECARD');
+
     if (
       accessToken &&
       (!createEcardDto.senderEmail || !createEcardDto.senderID)
@@ -49,6 +52,16 @@ export class EcardsService {
       data: optionItems,
     });
 
+    const recipientItems =
+      createRecipientsDto?.map((opt) => {
+        return {
+          ...opt,
+          eCardID: eCard.id,
+        };
+      }) || [];
+
+    await this.prisma.recipient.createMany({ data: recipientItems });
+
     return eCard;
   }
 
@@ -76,6 +89,7 @@ export class EcardsService {
     return this.prisma.eCard.findFirst({
       where: { eCardNumber },
       include: {
+        recipients: true,
         options: {
           include: {
             eCardComponent: { select: { ecardComponentID: true, order: true } },

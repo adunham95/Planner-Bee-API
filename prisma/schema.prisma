@@ -73,6 +73,7 @@ model ECardTemplate {
   imageURL        String?
   visible         Boolean          @default(true)
   premium         Boolean          @default(false)
+  stripeProductID String?
   featuredItem    FeaturedItem?
   categories      Category[]       @relation("ECardTemplateCategories")
   eCards          ECard[]

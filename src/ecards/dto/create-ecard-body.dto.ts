@@ -9,6 +9,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { CreateOptionItemDto } from 'src/option-items/dto/create-option-item.dto';
+import { CreateRecipientDto } from 'src/recipients/dto/create-recipient.dto';
 
 export class CreateEcardBodyDto {
   @IsString()
@@ -45,4 +46,9 @@ export class CreateEcardBodyDto {
   @ValidateNested({ each: true })
   @Type(() => CreateOptionItemDto)
   options?: CreateOptionItemDto[];
+
+  @ApiProperty()
+  @ValidateNested({ each: true })
+  @Type(() => CreateRecipientDto)
+  recipients?: CreateRecipientDto[];
 }

@@ -33,7 +33,15 @@ export class EcardsController {
     const options = createEcardDto.options;
     delete createEcardDto.options;
 
-    return this.ecardsService.create(createEcardDto, options, token);
+    const recipients = createEcardDto.recipients;
+    delete createEcardDto.recipients;
+
+    return this.ecardsService.create(
+      createEcardDto,
+      options,
+      recipients,
+      token,
+    );
   }
 
   @Get()

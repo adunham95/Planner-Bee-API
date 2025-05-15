@@ -13,6 +13,7 @@ import { OptionItemsModule } from './option-items/option-items.module';
 import { ShopModule } from './shop/shop.module';
 import { StripeModule } from './stripe/stripe.module';
 import { ConfigModule } from '@nestjs/config';
+import { RecipientsModule } from './recipients/recipients.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ConfigModule } from '@nestjs/config';
     ShopModule,
     StripeModule.forRootAsync(),
     ConfigModule.forRoot(),
+    RecipientsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
