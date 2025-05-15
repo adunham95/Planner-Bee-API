@@ -14,6 +14,9 @@ import { ShopModule } from './shop/shop.module';
 import { StripeModule } from './stripe/stripe.module';
 import { ConfigModule } from '@nestjs/config';
 import { RecipientsModule } from './recipients/recipients.module';
+import { MailModule } from './mail/mail.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
 
 @Module({
   imports: [
@@ -30,6 +33,28 @@ import { RecipientsModule } from './recipients/recipients.module';
     StripeModule.forRootAsync(),
     ConfigModule.forRoot(),
     RecipientsModule,
+    MailModule,
+    MailerModule.forRoot({
+      transport: {
+        host: process.env.SMTP_HOST,
+        port: parseInt(process.env.SMTP_PORT || '2525'),
+        secure: false, // upgrade later with STARTTLS
+        auth: {
+          user: process.env.SMTP_USERNAME,
+          pass: process.env.SMTP_PASSWORD,
+        },
+      },
+      defaults: {
+        from: process.env.SMTP_FROM,
+      },
+      template: {
+        dir: process.cwd() + '/templates',
+        adapter: new PugAdapter(),
+        options: {
+          strict: true,
+        },
+      },
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
