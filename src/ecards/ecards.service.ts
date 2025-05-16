@@ -24,6 +24,9 @@ export class EcardsService {
     accessToken?: string,
   ) {
     createEcardDto.eCardNumber = generateOrderNumber('ECARD');
+    if (!createEcardDto.status) {
+      createEcardDto.status = 'created';
+    }
 
     if (
       accessToken &&
@@ -74,6 +77,13 @@ export class EcardsService {
           },
         });
       }
+    }
+
+    if (recipientItems.length > 0) {
+      await this.prisma.eCard.update({
+        where: { id: eCard.id },
+        data: { status: 'sent' },
+      });
     }
 
     return eCard;
