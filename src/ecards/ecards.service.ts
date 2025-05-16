@@ -7,12 +7,14 @@ import { CreateOptionItemDto } from 'src/option-items/dto/create-option-item.dto
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from 'src/auth/auth.service';
 import { CreateRecipientDto } from 'src/recipients/dto/create-recipient.dto';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class EcardsService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private readonly mailService: MailService,
   ) {}
 
   async create(
@@ -61,6 +63,18 @@ export class EcardsService {
       }) || [];
 
     await this.prisma.recipient.createMany({ data: recipientItems });
+
+    for (const rec of recipientItems) {
+      if (rec?.email) {
+        await this.mailService.sendECardNotification({
+          to: rec.email,
+          context: {
+            firstName: rec.firstName,
+            eCardNumber: eCard.eCardNumber || '',
+          },
+        });
+      }
+    }
 
     return eCard;
   }

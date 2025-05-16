@@ -17,6 +17,7 @@ import { RecipientsModule } from './recipients/recipients.module';
 import { MailModule } from './mail/mail.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports: [
@@ -53,6 +54,14 @@ import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
         options: {
           strict: true,
         },
+      },
+    }),
+    BullModule.forRoot({
+      redis: {
+        host: process.env.REDIS_HOST,
+        port: parseInt(process.env.REDIS_PORT || '3000'),
+        username: process.env.REDIS_USERNAME,
+        password: process.env.REDIS_PASSWORD,
       },
     }),
   ],

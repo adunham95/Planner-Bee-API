@@ -9,10 +9,11 @@ export class MailController {
   async sendMail() {
     await this.mailService.sendEmail({
       subject: 'Welcome to the realm of NestJS',
-      to: ['adunham95@gmail.com'],
+      to: 'adunham95@gmail.com',
       template: 'received-ecard',
       context: {
-        name: 'Jhon Doe',
+        firstName: 'Adrian',
+        eCardNumber: 'ECARD-1234',
       },
     });
   }
