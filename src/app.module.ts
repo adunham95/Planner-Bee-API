@@ -18,6 +18,7 @@ import { MailModule } from './mail/mail.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
 import { BullModule } from '@nestjs/bull';
+import { ImagesModule } from './images/images.module';
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { BullModule } from '@nestjs/bull';
         password: process.env.REDIS_PASSWORD,
       },
     }),
+    ImagesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
