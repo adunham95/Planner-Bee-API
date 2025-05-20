@@ -36,7 +36,6 @@ export class CreateEcardComponentDto {
   customStyles?: string;
 
   @IsOptional()
-  @IsString()
   @ApiProperty()
   @IsArray()
   options?: string[];

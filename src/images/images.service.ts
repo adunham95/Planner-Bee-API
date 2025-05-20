@@ -1,5 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { AxiosError } from 'axios';
 import { firstValueFrom } from 'rxjs';
 import { PrismaService } from 'src/prisma/prisma.service';
 
@@ -65,11 +66,12 @@ export class ImagesService {
       }
 
       return data.result.uploadURL;
-    } catch (error) {
+    } catch (error: unknown) {
       console.log(error);
+      const err = error as AxiosError;
       console.error(
         'Cloudflare direct upload error:',
-        error?.response?.data || error,
+        err?.response?.data || error,
       );
       throw new InternalServerErrorException(
         'Failed to get upload URL from Cloudflare',

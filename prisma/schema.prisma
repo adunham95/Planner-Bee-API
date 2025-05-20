@@ -72,8 +72,9 @@ model ECardTemplate {
   components      ECardComponent[]
   imageURL        String?
   visible         Boolean          @default(true)
-  premium         Boolean          @default(false)
+  premium         Boolean?          @default(false)
   stripeProductID String?
+  stripePriceID String?
   featuredItem    FeaturedItem?
   categories      Category[]       @relation("ECardTemplateCategories")
   eCards          ECard[]
@@ -86,10 +87,10 @@ model ECardComponent {
   key              String        @unique
   ecardComponentID String
   ecardID          String
-  ecard            ECardTemplate @relation(references: [id], fields: [ecardID])
+  ecard            ECardTemplate @relation(references: [id], fields: [ecardID], onDelete: Cascade)
   label            String?       @default("")
   editable         Boolean?      @default(false)
-  default          String?       @default("")
+  default         String?       @default("")
   customStyles     String?       @default("")
   options          String[]      @default([])
   createdAt        DateTime      @default(now())

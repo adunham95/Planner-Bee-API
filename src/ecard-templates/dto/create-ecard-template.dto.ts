@@ -43,4 +43,14 @@ export class CreateEcardTemplateDto {
   @IsOptional()
   @ApiProperty({ required: false, default: false })
   visible?: boolean;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  stripeProductID?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  stripePriceID?: string;
 }

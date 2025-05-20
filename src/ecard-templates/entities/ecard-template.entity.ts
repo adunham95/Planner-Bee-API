@@ -27,6 +27,12 @@ export class EcardTemplateEntity implements ECardTemplate {
   premium: boolean;
 
   @ApiProperty()
+  stripeProductID: string | null;
+
+  @ApiProperty()
+  stripePriceID: string | null;
+
+  @ApiProperty()
   createdAt: Date;
 
   @ApiProperty()
