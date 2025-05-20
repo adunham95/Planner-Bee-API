@@ -28,21 +28,23 @@ model Article {
 
 model User {
   id            Int          @id @default(autoincrement())
-  name          String
+  firstName     String       @default("Buzz")
+  lastName      String       @default("Honeywell")
   email         String       @unique
   password      String
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
-  accountStatus String      @default("active")
+  accountStatus String       @default("active")
   articles      Article[]
   myCard        ECard[]
   loginTokens   LoginToken[]
   resetToken    ResetToken?
+  contacts      Contact[]
 }
 
 model LoginToken {
   id             Int      @id @default(autoincrement())
-  token          String @unique
+  token          String   @unique
   userID         Int
   user           User     @relation(fields: [userID], references: [id])
   expirationDate DateTime @default(now())
@@ -52,7 +54,7 @@ model LoginToken {
 
 model ResetToken {
   id             Int      @id @default(autoincrement())
-  token          String @unique
+  token          String   @unique
   userID         Int      @unique
   user           User     @relation(fields: [userID], references: [id])
   expirationDate DateTime @default(now())
@@ -72,9 +74,9 @@ model ECardTemplate {
   components      ECardComponent[]
   imageURL        String?
   visible         Boolean          @default(true)
-  premium         Boolean?          @default(false)
+  premium         Boolean?         @default(false)
   stripeProductID String?
-  stripePriceID String?
+  stripePriceID   String?
   featuredItem    FeaturedItem?
   categories      Category[]       @relation("ECardTemplateCategories")
   eCards          ECard[]
@@ -90,7 +92,7 @@ model ECardComponent {
   ecard            ECardTemplate @relation(references: [id], fields: [ecardID], onDelete: Cascade)
   label            String?       @default("")
   editable         Boolean?      @default(false)
-  default         String?       @default("")
+  default          String?       @default("")
   customStyles     String?       @default("")
   options          String[]      @default([])
   createdAt        DateTime      @default(now())
@@ -128,7 +130,7 @@ model ECard {
   recipients       Recipient[]
   options          OptionItem[]
   status           String?       @default("draft")
-  isCustom Boolean @default(true)
+  isCustom         Boolean       @default(true)
 
   @@index([senderID, eCardNumber])
 }
@@ -148,11 +150,24 @@ model OptionItem {
 }
 
 model Recipient {
-  id        String  @id @default(uuid())
+  id        String   @id @default(uuid())
   firstName String?
   lastName  String?
   email     String?
   phone     String?
   eCardID   String?
-  eCard     ECard?  @relation(references: [id], fields: [eCardID])
+  eCard     ECard?   @relation(references: [id], fields: [eCardID])
+  contactID String?
+  contact   Contact? @relation(fields: [contactID], references: [id])
+}
+
+model Contact {
+  id        String      @id @default(uuid())
+  firstName String?
+  lastName  String?
+  email     String?
+  phone     String?
+  userID    Int
+  user      User        @relation(fields: [userID], references: [id])
+  recipient Recipient[]
 }

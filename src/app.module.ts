@@ -19,6 +19,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
 import { BullModule } from '@nestjs/bull';
 import { ImagesModule } from './images/images.module';
+import { ContactsModule } from './contacts/contacts.module';
 
 @Module({
   imports: [
@@ -66,6 +67,7 @@ import { ImagesModule } from './images/images.module';
       },
     }),
     ImagesModule,
+    ContactsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

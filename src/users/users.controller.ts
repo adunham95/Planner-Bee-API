@@ -33,10 +33,7 @@ export class UsersController {
   async create(@Body() createUserDto: CreateUserDto) {
     try {
       const user = await this.usersService.create(createUserDto);
-      return new UserEntity({
-        ...user,
-        name: user.name ?? undefined, // replaces null with undefined
-      });
+      return new UserEntity(user);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         // The .code property can be accessed in a type-safe manner
@@ -53,9 +50,7 @@ export class UsersController {
   @ApiOkResponse({ type: UserEntity, isArray: true })
   async findAll() {
     const users = await this.usersService.findAll();
-    return users.map(
-      (user) => new UserEntity({ ...user, name: user.name ?? undefined }),
-    );
+    return users.map((user) => new UserEntity(user));
   }
 
   @Get(':id')
@@ -66,7 +61,6 @@ export class UsersController {
     const user = await this.usersService.findOne(id);
     return new UserEntity({
       ...user,
-      name: user?.name ?? undefined, // replaces null with undefined
     });
   }
 
@@ -81,7 +75,6 @@ export class UsersController {
     const user = await this.usersService.update(id, updateUserDto);
     return new UserEntity({
       ...user,
-      name: user?.name ?? undefined, // replaces null with undefined
     });
   }
 
@@ -93,7 +86,6 @@ export class UsersController {
     const user = await this.usersService.remove(id);
     return new UserEntity({
       ...user,
-      name: user?.name ?? undefined, // replaces null with undefined
     });
   }
 }
