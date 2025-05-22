@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { CreateOptionItemDto } from './dto/create-option-item.dto';
 import { UpdateOptionItemDto } from './dto/update-option-item.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class OptionItemsService {
+  constructor(private prisma: PrismaService) {}
   create(createOptionItemDto: CreateOptionItemDto) {
     return 'This action adds a new optionItem';
   }
@@ -16,8 +18,11 @@ export class OptionItemsService {
     return `This action returns a #${id} optionItem`;
   }
 
-  update(id: number, updateOptionItemDto: UpdateOptionItemDto) {
-    return `This action updates a #${id} optionItem`;
+  update(id: string, updateOptionItemDto: UpdateOptionItemDto) {
+    return this.prisma.optionItem.update({
+      where: { id },
+      data: updateOptionItemDto,
+    });
   }
 
   remove(id: number) {

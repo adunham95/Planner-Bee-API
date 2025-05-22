@@ -116,7 +116,14 @@ export class EcardsService {
         recipients: true,
         options: {
           include: {
-            eCardComponent: { select: { ecardComponentID: true, order: true } },
+            eCardComponent: {
+              select: {
+                ecardComponentID: true,
+                order: true,
+                label: true,
+                editable: true,
+              },
+            },
           },
         },
       },
@@ -125,7 +132,7 @@ export class EcardsService {
 
   update(id: string, updateEcardDto: UpdateEcardDto) {
     console.log(updateEcardDto);
-    return `This action updates a #${id} ecard`;
+    return this.prisma.eCard.update({ where: { id }, data: updateEcardDto });
   }
 
   remove(id: string) {
