@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { StripeService } from './stripe.service';
 
 @Controller('stripe')
@@ -13,5 +13,15 @@ export class StripeController {
       body.description,
       body.price,
     );
+  }
+
+  @Post('create-checkout-session')
+  async createCheckoutSession(@Body() { skus = [] }: { skus?: string[] }) {
+    return this.stripeService.createCheckoutSession(skus);
+  }
+
+  @Get('checkout-session/:id/line-items')
+  async getCheckoutSession(@Param('id') id: string) {
+    return this.stripeService.checkoutSessionLineItems(id);
   }
 }
