@@ -89,6 +89,78 @@ export class EcardsService {
     return eCard;
   }
 
+  async createCheckout(
+    createEcardDto: CreateEcardDto,
+    createOptionItemDto?: CreateOptionItemDto[],
+    createRecipientsDto?: CreateRecipientDto[],
+    accessToken?: string,
+  ) {
+    createEcardDto.eCardNumber = generateOrderNumber('ECARD');
+    if (!createEcardDto.status) {
+      createEcardDto.status = 'draft';
+    }
+
+    if (
+      accessToken &&
+      (!createEcardDto.senderEmail || !createEcardDto.senderID)
+    ) {
+      const payload: JwtPayload = this.jwtService.decode(accessToken);
+      console.log({ payload });
+      createEcardDto.senderID = payload.userId;
+    }
+
+    if (!createEcardDto.senderEmail || !createEcardDto.senderID) {
+      throw new BadRequestException('No Sender Entered');
+    }
+
+    const eCard = await this.prisma.eCard.create({
+      data: createEcardDto,
+    });
+
+    const optionItems =
+      createOptionItemDto?.map((opt) => {
+        return {
+          ...opt,
+          eCardId: eCard.id,
+        };
+      }) || [];
+
+    await this.prisma.optionItem.createMany({
+      data: optionItems,
+    });
+
+    const recipientItems =
+      createRecipientsDto?.map((opt) => {
+        return {
+          ...opt,
+          eCardID: eCard.id,
+        };
+      }) || [];
+
+    await this.prisma.recipient.createMany({ data: recipientItems });
+
+    for (const rec of recipientItems) {
+      if (rec?.email) {
+        await this.mailService.sendECardNotification({
+          to: rec.email,
+          context: {
+            firstName: rec.firstName,
+            eCardNumber: eCard.eCardNumber || '',
+          },
+        });
+      }
+    }
+
+    if (recipientItems.length > 0) {
+      await this.prisma.eCard.update({
+        where: { id: eCard.id },
+        data: { status: 'sent' },
+      });
+    }
+
+    if (createEcardDto.eCardTemplateSku) return eCard;
+  }
+
   findAll() {
     return this.prisma.eCard.findMany();
   }

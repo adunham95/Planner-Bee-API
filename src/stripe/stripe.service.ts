@@ -39,10 +39,10 @@ export class StripeService {
     }
   }
 
-  async createCheckoutSession(skus: string[]) {
+  async createCheckoutSession(sku: string) {
     try {
       const products = await this.prisma.eCardTemplate.findMany({
-        where: { sku: { in: skus } },
+        where: { sku },
       });
 
       if (products.length === 0) {
@@ -70,21 +70,12 @@ export class StripeService {
         // The URL of your payment completion page
         return_url:
           // 'https://example.com/return?session_id={CHECKOUT_SESSION_ID}',
-          `http://${this.frontEndUrl}/shop/thank-you`,
+          `http://${this.frontEndUrl}/shop/thank-you?session_id={CHECKOUT_SESSION_ID}`,
       });
       return { checkoutSessionClientSecret: session.client_secret };
     } catch (error) {
       console.error('There was an error creating the checkout session', error);
       throw new Error('Error creating session');
     }
-  }
-
-  async checkoutSessionLineItems(checkoutID: string) {
-    try {
-      const lineItems =
-        await this.stripe.checkout.sessions.listLineItems(checkoutID);
-
-      return lineItems;
-    } catch (error) {}
   }
 }
