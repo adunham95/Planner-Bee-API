@@ -20,6 +20,9 @@ import { PugAdapter } from '@nestjs-modules/mailer/dist/adapters/pug.adapter';
 import { BullModule } from '@nestjs/bull';
 import { ImagesModule } from './images/images.module';
 import { ContactsModule } from './contacts/contacts.module';
+import { ProductsModule } from './products/products.module';
+import { OrdersModule } from './orders/orders.module';
+import { OrderProductsModule } from './order-products/order-products.module';
 
 @Module({
   imports: [
@@ -68,6 +71,9 @@ import { ContactsModule } from './contacts/contacts.module';
     }),
     ImagesModule,
     ContactsModule,
+    ProductsModule,
+    OrdersModule,
+    OrderProductsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

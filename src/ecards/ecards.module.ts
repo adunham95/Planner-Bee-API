@@ -7,8 +7,9 @@ import { AuthModule } from 'src/auth/auth.module';
 import { MailModule } from 'src/mail/mail.module';
 
 @Module({
-  controllers: [EcardsController],
-  providers: [EcardsService],
-  imports: [PrismaModule, JwtModule, AuthModule, MailModule],
+	controllers: [EcardsController],
+	providers: [EcardsService],
+	imports: [PrismaModule, JwtModule, AuthModule, MailModule],
+	exports: [EcardsService]
 })
 export class EcardsModule {}

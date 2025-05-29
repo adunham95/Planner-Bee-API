@@ -1,39 +1,33 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsDateString,
-  IsEmail,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsDateString, IsOptional, IsString } from 'class-validator';
 
 export class CreateEcardDto {
-  @IsString()
-  @IsEmail()
-  @IsOptional()
-  @ApiProperty()
-  senderEmail: string;
+	// @IsString()
+	// @IsEmail()
+	// @IsOptional()
+	// @ApiProperty()
+	// senderEmail: string;
 
-  @IsNumber()
-  @IsOptional()
-  @ApiProperty()
-  senderID: number;
+	// @IsNumber()
+	// @IsOptional()
+	// @ApiProperty()
+	// senderID: number;
 
-  @IsDateString()
-  @ApiProperty()
-  deliveryDate?: Date;
+	@IsDateString()
+	@ApiProperty()
+	deliveryDate?: Date;
 
-  @IsString()
-  @IsOptional()
-  @ApiProperty()
-  eCardNumber?: string;
+	@IsString()
+	@IsOptional()
+	@ApiProperty()
+	eCardNumber?: string;
 
-  @IsString()
-  @ApiProperty()
-  eCardTemplateSku: string;
+	@IsString()
+	@ApiProperty()
+	eCardTemplateSku: string;
 
-  @IsString()
-  @IsOptional()
-  @ApiProperty()
-  status?: string;
+	@IsString()
+	@IsOptional()
+	@ApiProperty()
+	status?: string;
 }

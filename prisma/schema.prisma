@@ -36,10 +36,10 @@ model User {
   updatedAt     DateTime     @updatedAt
   accountStatus String       @default("active")
   articles      Article[]
-  myCard        ECard[]
   loginTokens   LoginToken[]
   resetToken    ResetToken?
   contacts      Contact[]
+  orders        Order[]
 }
 
 model LoginToken {
@@ -65,80 +65,59 @@ model ResetToken {
 model ECardTemplate {
   id              String           @id @default(uuid())
   sku             String           @unique
-  name            String
-  description     String
-  cost            Int
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @default(now()) @updatedAt
   includedOptions String[]         @default([])
   components      ECardComponent[]
-  imageURL        String?
-  visible         Boolean          @default(true)
-  premium         Boolean?         @default(false)
-  stripeProductID String?
-  stripePriceID   String?
-  featuredItem    FeaturedItem?
-  categories      Category[]       @relation("ECardTemplateCategories")
   eCards          ECard[]
-
-  @@index([sku])
+  products        Product[]
 }
 
 model ECardComponent {
-  id               String        @id @default(uuid())
-  key              String        @unique
+  id               String            @id @default(uuid())
+  key              String            @unique
   ecardComponentID String
   ecardID          String
-  ecard            ECardTemplate @relation(references: [id], fields: [ecardID], onDelete: Cascade)
-  label            String?       @default("")
-  editable         Boolean?      @default(false)
-  default          String?       @default("")
-  customStyles     String?       @default("")
-  options          String[]      @default([])
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @default(now()) @updatedAt
-  order            Int           @default(1)
-  OptionItem       OptionItem[]
+  ecard            ECardTemplate     @relation(references: [id], fields: [ecardID], onDelete: Cascade)
+  label            String?           @default("")
+  editable         Boolean?          @default(false)
+  default          String?           @default("")
+  customStyles     String?           @default("")
+  options          String[]          @default([])
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @default(now()) @updatedAt
+  order            Int               @default(1)
+  OptionItem       ECardOptionItem[]
 
   @@index([key])
 }
 
-model FeaturedItem {
-  id            String         @id @default(uuid())
-  ecardID       String         @unique
-  ecardTemplate ECardTemplate? @relation(references: [id], fields: [ecardID])
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @default(now()) @updatedAt
-}
-
 model Category {
-  id             String          @id @default(uuid())
-  name           String          @unique
-  imageURL       String
-  eCardTemplates ECardTemplate[] @relation("ECardTemplateCategories")
+  id       String    @id @default(uuid())
+  name     String    @unique
+  imageURL String
+  products Product[] @relation("ProductCategories")
 }
 
 model ECard {
-  id               String        @id @default(uuid())
-  senderEmail      String?       @default("")
-  senderID         Int?
-  sender           User?         @relation(references: [id], fields: [senderID])
-  deliveryDate     DateTime?
-  eCardNumber      String?       @default("")
-  eCardTemplateSku String
-  eCardTemplate    ECardTemplate @relation(references: [sku], fields: [eCardTemplateSku])
-  recipients       Recipient[]
-  options          OptionItem[]
-  status           String?       @default("draft")
-  isCustom         Boolean       @default(true)
+  id              String            @id @default(uuid())
+  deliveryDate    DateTime?
+  eCardNumber     String?           @default("")
+  eCardTemplateSKU String
+  eCardTemplate   ECardTemplate     @relation(references: [sku], fields: [eCardTemplateSKU])
+  recipients      Recipient[]
+  options         ECardOptionItem[]
+  status          String?           @default("draft")
+  isCustom        Boolean           @default(true)
+  order           OrderProduct?
 
-  @@index([senderID, eCardNumber])
+  @@index([eCardNumber])
 }
 
-model OptionItem {
+model ECardOptionItem {
   id             String         @id @default(uuid())
   eCardId        String?
-  eCard          ECard?         @relation(references: [id], fields: [eCardId])
+  eCard          ECard?         @relation(references: [id], fields: [eCardId], onDelete: Cascade)
   name           String?
   value          String
   key            String
@@ -170,4 +149,49 @@ model Contact {
   userID    Int
   user      User        @relation(fields: [userID], references: [id])
   recipient Recipient[]
+}
+
+model Product {
+  id               String         @id @default(uuid())
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @default(now()) @updatedAt
+  name             String
+  sku              String         @unique
+  description      String
+  price            Int
+  imageURL         String?
+  visible          Boolean        @default(true)
+  featured         Boolean?       @default(false)
+  productType      String
+  eCardTemplateSKU String?
+  eCardTemplate    ECardTemplate? @relation(fields: [eCardTemplateSKU], references: [sku])
+  categories       Category[]     @relation("ProductCategories")
+  orderProducts    OrderProduct[]
+
+  @@index([sku])
+}
+
+model Order {
+  id          String         @id @default(uuid())
+  orderNumber String
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  status      String?        @default("cart")
+  customerID  Int?
+  customer    User?          @relation(references: [id], fields: [customerID])
+  products    OrderProduct[]
+
+  @@index([orderNumber, customerID])
+}
+
+model OrderProduct {
+  id          String  @id @default(uuid())
+  orderNumber String
+  order       Order   @relation(fields: [orderNumber], references: [id])
+  productSKU  String
+  product     Product @relation(fields: [productSKU], references: [sku])
+  productType String
+  quantity    Int     @default(1)
+  eCardID     String? @unique
+  eCard       ECard?  @relation(fields: [eCardID], references: [id])
 }

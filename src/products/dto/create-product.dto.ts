@@ -5,23 +5,22 @@ import {
 	IsNotEmpty,
 	IsOptional,
 	IsString,
-	Length,
 	MaxLength,
 	MinLength
 } from 'class-validator';
 
-export class CreateEcardTemplateDto {
+export class CreateProductDto {
 	@IsString()
 	@IsNotEmpty()
-	@Length(4)
+	@MinLength(3)
 	@ApiProperty()
-	sku: string;
+	name: string;
 
 	@IsString()
 	@IsNotEmpty()
 	@MinLength(4)
 	@ApiProperty()
-	name: string;
+	sku: string;
 
 	@IsString()
 	@IsNotEmpty()
@@ -32,7 +31,7 @@ export class CreateEcardTemplateDto {
 	@IsInt()
 	@IsNotEmpty()
 	@ApiProperty()
-	cost: number;
+	price: number;
 
 	@IsString()
 	@IsOptional()
@@ -44,13 +43,17 @@ export class CreateEcardTemplateDto {
 	@ApiProperty({ required: false, default: false })
 	visible?: boolean;
 
-	@IsString()
+	@IsBoolean()
 	@IsOptional()
+	@ApiProperty({ required: false, default: false })
+	featured?: boolean;
+
+	@IsString()
 	@ApiProperty()
-	stripeProductID?: string;
+	productType: string;
 
 	@IsString()
 	@IsOptional()
 	@ApiProperty()
-	stripePriceID?: string;
+	eCardTemplateSKU?: string;
 }

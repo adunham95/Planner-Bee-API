@@ -5,59 +5,61 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class EcardTemplatesService {
-  constructor(private prisma: PrismaService) {}
+	constructor(private prisma: PrismaService) {}
 
-  create(createEcardTemplateDto: CreateEcardTemplateDto) {
-    const sku = createEcardTemplateDto.sku.toUpperCase();
+	create(createEcardTemplateDto: CreateEcardTemplateDto) {
+		const sku = createEcardTemplateDto.sku.toUpperCase();
 
-    createEcardTemplateDto.sku = sku;
+		createEcardTemplateDto.sku = sku;
 
-    return this.prisma.eCardTemplate.create({ data: createEcardTemplateDto });
-  }
+		return this.prisma.eCardTemplate.create({ data: createEcardTemplateDto });
+	}
 
-  findAll() {
-    return this.prisma.eCardTemplate.findMany({
-      include: { components: true },
-    });
-  }
+	findAll() {
+		return this.prisma.eCardTemplate.findMany({
+			include: { components: true }
+		});
+	}
 
-  findAvailable() {
-    return this.prisma.eCardTemplate.findMany({
-      where: { visible: true },
-      include: { components: true, categories: true },
-    });
-  }
+	findAvailable() {
+		// return this.prisma.eCardTemplate.findMany({
+		// 	where: { visible: true },
+		// 	include: { components: true, categories: true }
+		// });
+		return [];
+	}
 
-  findFeatured() {
-    return this.prisma.featuredItem.findMany({
-      include: { ecardTemplate: true },
-    });
-  }
+	findFeatured() {
+		// return this.prisma.featuredItem.findMany({
+		// 	include: { ecardTemplate: true }
+		// });
+		return [];
+	}
 
-  findOneBySku(sku: string) {
-    return this.prisma.eCardTemplate.findFirst({
-      where: { sku },
-      include: { components: true },
-    });
-  }
+	findOneBySku(sku: string) {
+		return this.prisma.eCardTemplate.findFirst({
+			where: { sku },
+			include: { components: true }
+		});
+	}
 
-  findOne(id: string) {
-    return this.prisma.eCardComponent.findFirst({ where: { id } });
-  }
+	findOne(id: string) {
+		return this.prisma.eCardComponent.findFirst({ where: { id } });
+	}
 
-  update(id: string, updateEcardTemplateDto: UpdateEcardTemplateDto) {
-    if (updateEcardTemplateDto.sku) {
-      const sku = updateEcardTemplateDto.sku.toUpperCase();
+	update(id: string, updateEcardTemplateDto: UpdateEcardTemplateDto) {
+		if (updateEcardTemplateDto.sku) {
+			const sku = updateEcardTemplateDto.sku.toUpperCase();
 
-      updateEcardTemplateDto.sku = sku;
-    }
-    return this.prisma.eCardTemplate.update({
-      where: { id },
-      data: updateEcardTemplateDto,
-    });
-  }
+			updateEcardTemplateDto.sku = sku;
+		}
+		return this.prisma.eCardTemplate.update({
+			where: { id },
+			data: updateEcardTemplateDto
+		});
+	}
 
-  remove(id: string) {
-    return this.prisma.eCardTemplate.delete({ where: { id } });
-  }
+	remove(id: string) {
+		return this.prisma.eCardTemplate.delete({ where: { id } });
+	}
 }
