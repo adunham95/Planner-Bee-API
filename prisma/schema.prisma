@@ -74,20 +74,22 @@ model ECardTemplate {
 }
 
 model ECardComponent {
-  id               String            @id @default(uuid())
-  key              String            @unique
-  ecardComponentID String
-  ecardID          String
-  ecard            ECardTemplate     @relation(references: [id], fields: [ecardID], onDelete: Cascade)
-  label            String?           @default("")
-  editable         Boolean?          @default(false)
-  default          String?           @default("")
-  customStyles     String?           @default("")
-  options          String[]          @default([])
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @default(now()) @updatedAt
-  order            Int               @default(1)
-  OptionItem       ECardOptionItem[]
+  id                 String            @id @default(uuid())
+  key                String            @unique
+  ecardComponentID   String
+  ecardID            String?
+  ecard              ECardTemplate?    @relation(references: [id], fields: [ecardID], onDelete: Cascade)
+  partyBoxTemplateID String?
+  partyBox           PartyBoxTemplate? @relation(references: [id], fields: [partyBoxTemplateID])
+  label              String?           @default("")
+  editable           Boolean?          @default(false)
+  default            String?           @default("")
+  customStyles       String?           @default("")
+  options            String[]          @default([])
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @default(now()) @updatedAt
+  order              Int               @default(1)
+  OptionItem         ECardOptionItem[]
 
   @@index([key])
 }
@@ -100,16 +102,16 @@ model Category {
 }
 
 model ECard {
-  id              String            @id @default(uuid())
-  deliveryDate    DateTime?
-  eCardNumber     String?           @default("")
+  id               String            @id @default(uuid())
+  deliveryDate     DateTime?
+  eCardNumber      String?           @default("")
   eCardTemplateSKU String
-  eCardTemplate   ECardTemplate     @relation(references: [sku], fields: [eCardTemplateSKU])
-  recipients      Recipient[]
-  options         ECardOptionItem[]
-  status          String?           @default("draft")
-  isCustom        Boolean           @default(true)
-  order           OrderProduct?
+  eCardTemplate    ECardTemplate     @relation(references: [sku], fields: [eCardTemplateSKU])
+  recipients       Recipient[]
+  options          ECardOptionItem[]
+  status           String?           @default("draft")
+  isCustom         Boolean           @default(true)
+  order            OrderProduct?
 
   @@index([eCardNumber])
 }
@@ -119,6 +121,8 @@ model ECardOptionItem {
   eCardId        String?
   eCard          ECard?         @relation(references: [id], fields: [eCardId], onDelete: Cascade)
   name           String?
+  // partyBoxId String?
+  // partBox PartyBox? @relation(references: [id], fields: [partyBoxId])
   value          String
   key            String
   createdAt      DateTime       @default(now())
@@ -194,4 +198,28 @@ model OrderProduct {
   quantity    Int     @default(1)
   eCardID     String? @unique
   eCard       ECard?  @relation(fields: [eCardID], references: [id])
+}
+
+model PartyBoxTemplate {
+  id              String           @id @default(uuid())
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @default(now()) @updatedAt
+  items           PartyBoxItem[]
+  eCardComponents ECardComponent[]
+}
+
+model PartyBoxItem {
+  id                 String           @id @default(uuid())
+  quantity           Int              @default(1)
+  partyBoxTemplateID String
+  partyBox           PartyBoxTemplate @relation(fields: [partyBoxTemplateID], references: [id])
+  stockID           String
+  stock             Stock         @relation(fields: [stockID], references: [id])
+}
+
+model Stock {
+  id            String         @id @default(uuid())
+  name          String
+  quantity         Int
+  partyBoxItems PartyBoxItem[]
 }

@@ -6,8 +6,16 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class ProductsService {
 	constructor(private prisma: PrismaService) {}
-	create(createProductDto: CreateProductDto) {
+	async create(createProductDto: CreateProductDto) {
 		createProductDto.sku = createProductDto.sku.toUpperCase();
+
+		if (createProductDto.productType === 'ecard') {
+			await this.prisma.eCardTemplate.create({
+				data: { sku: createProductDto.sku }
+			});
+			createProductDto.eCardTemplateSKU = createProductDto.sku;
+		}
+
 		return this.prisma.product.create({ data: createProductDto });
 	}
 
@@ -20,11 +28,11 @@ export class ProductsService {
 	}
 
 	findECards() {
-		return this.prisma.product.findMany({ where: { visible: true, productType: 'eCard' } });
+		return this.prisma.product.findMany({ where: { visible: true, productType: 'ecard' } });
 	}
 
 	findPartyBoxes() {
-		return this.prisma.product.findMany({ where: { visible: true, productType: 'party-boxes' } });
+		return this.prisma.product.findMany({ where: { visible: true, productType: 'party-box' } });
 	}
 
 	findAvailable() {
@@ -35,8 +43,11 @@ export class ProductsService {
 		return this.prisma.product.findFirst({ where: { id } });
 	}
 
-	findOneBySky(sku: string) {
-		return this.prisma.product.findFirst({ where: { sku } });
+	findOneBySku(sku: string) {
+		return this.prisma.product.findFirst({
+			where: { sku },
+			include: { eCardTemplate: { include: { components: true } } }
+		});
 	}
 
 	update(id: string, updateProductDto: UpdateProductDto) {
