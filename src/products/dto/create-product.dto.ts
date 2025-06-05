@@ -56,4 +56,9 @@ export class CreateProductDto {
 	@IsOptional()
 	@ApiProperty()
 	eCardTemplateSKU?: string;
+
+	@IsString()
+	@IsOptional()
+	@ApiProperty()
+	partyBoxTemplateSKU?: string;
 }

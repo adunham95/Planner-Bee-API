@@ -21,6 +21,7 @@ export class EcardTemplatesService {
 		});
 	}
 
+	//TODO Remove
 	findAvailable() {
 		// return this.prisma.eCardTemplate.findMany({
 		// 	where: { visible: true },
@@ -29,6 +30,7 @@ export class EcardTemplatesService {
 		return [];
 	}
 
+	//TODO removed
 	findFeatured() {
 		// return this.prisma.featuredItem.findMany({
 		// 	include: { ecardTemplate: true }

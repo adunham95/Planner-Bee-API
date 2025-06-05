@@ -23,6 +23,9 @@ import { ContactsModule } from './contacts/contacts.module';
 import { ProductsModule } from './products/products.module';
 import { OrdersModule } from './orders/orders.module';
 import { OrderProductsModule } from './order-products/order-products.module';
+import { PartyBoxTemplatesModule } from './party-box-templates/party-box-templates.module';
+import { PartyBoxSuppliesModule } from './party-box-supplies/party-box-supplies.module';
+import { StockModule } from './stock/stock.module';
 
 @Module({
   imports: [
@@ -74,6 +77,9 @@ import { OrderProductsModule } from './order-products/order-products.module';
     ProductsModule,
     OrdersModule,
     OrderProductsModule,
+    PartyBoxTemplatesModule,
+    PartyBoxSuppliesModule,
+    StockModule,
   ],
   controllers: [AppController],
   providers: [AppService],

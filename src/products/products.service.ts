@@ -16,6 +16,13 @@ export class ProductsService {
 			createProductDto.eCardTemplateSKU = createProductDto.sku;
 		}
 
+		if (createProductDto.productType === 'party-box') {
+			await this.prisma.partyBoxTemplate.create({
+				data: { sku: createProductDto.sku }
+			});
+			createProductDto.partyBoxTemplateSKU = createProductDto.sku;
+		}
+
 		return this.prisma.product.create({ data: createProductDto });
 	}
 
@@ -46,7 +53,12 @@ export class ProductsService {
 	findOneBySku(sku: string) {
 		return this.prisma.product.findFirst({
 			where: { sku },
-			include: { eCardTemplate: { include: { components: true } } }
+			include: {
+				eCardTemplate: { include: { components: true } },
+				partyBoxTemplate: {
+					include: { eCardComponents: true, supplies: { include: { stock: true } } }
+				}
+			}
 		});
 	}
 

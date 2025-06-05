@@ -156,21 +156,23 @@ model Contact {
 }
 
 model Product {
-  id               String         @id @default(uuid())
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @default(now()) @updatedAt
-  name             String
-  sku              String         @unique
-  description      String
-  price            Int
-  imageURL         String?
-  visible          Boolean        @default(true)
-  featured         Boolean?       @default(false)
-  productType      String
-  eCardTemplateSKU String?
-  eCardTemplate    ECardTemplate? @relation(fields: [eCardTemplateSKU], references: [sku])
-  categories       Category[]     @relation("ProductCategories")
-  orderProducts    OrderProduct[]
+  id                  String            @id @default(uuid())
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @default(now()) @updatedAt
+  name                String
+  sku                 String            @unique
+  description         String
+  price               Int
+  imageURL            String?
+  visible             Boolean           @default(true)
+  featured            Boolean?          @default(false)
+  productType         String
+  eCardTemplateSKU    String?
+  eCardTemplate       ECardTemplate?    @relation(fields: [eCardTemplateSKU], references: [sku])
+  partyBoxTemplateSKU String?
+  partyBoxTemplate    PartyBoxTemplate? @relation(fields: [partyBoxTemplateSKU], references: [sku])
+  categories          Category[]        @relation("ProductCategories")
+  orderProducts       OrderProduct[]
 
   @@index([sku])
 }
@@ -201,25 +203,27 @@ model OrderProduct {
 }
 
 model PartyBoxTemplate {
-  id              String           @id @default(uuid())
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @default(now()) @updatedAt
-  items           PartyBoxItem[]
+  id              String             @id @default(uuid())
+  sku             String             @unique
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @default(now()) @updatedAt
+  supplies        PartyBoxSupplies[]
   eCardComponents ECardComponent[]
+  product         Product[]
 }
 
-model PartyBoxItem {
+model PartyBoxSupplies {
   id                 String           @id @default(uuid())
   quantity           Int              @default(1)
   partyBoxTemplateID String
   partyBox           PartyBoxTemplate @relation(fields: [partyBoxTemplateID], references: [id])
-  stockID           String
-  stock             Stock         @relation(fields: [stockID], references: [id])
+  stockID            String
+  stock              Stock            @relation(fields: [stockID], references: [id])
 }
 
 model Stock {
-  id            String         @id @default(uuid())
+  id            String             @id @default(uuid())
   name          String
-  quantity         Int
-  partyBoxItems PartyBoxItem[]
+  quantity      Int
+  partyBoxItems PartyBoxSupplies[]
 }

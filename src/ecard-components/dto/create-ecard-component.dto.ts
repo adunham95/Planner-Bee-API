@@ -2,41 +2,46 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateEcardComponentDto {
-  @IsString()
-  @ApiProperty()
-  key: string;
+	@IsString()
+	@ApiProperty()
+	key: string;
 
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty()
-  ecardComponentID: string;
+	@IsString()
+	@IsNotEmpty()
+	@ApiProperty()
+	ecardComponentID: string;
 
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty()
-  ecardID: string;
+	@IsString()
+	@IsOptional()
+	@ApiProperty()
+	ecardID: string;
 
-  @IsString()
-  @IsOptional()
-  @ApiProperty()
-  label?: string;
+	@IsString()
+	@IsOptional()
+	@ApiProperty()
+	partyBoxTemplateID: string;
 
-  @IsOptional()
-  @ApiProperty({ default: false })
-  editable?: boolean;
+	@IsString()
+	@IsOptional()
+	@ApiProperty()
+	label?: string;
 
-  @IsOptional()
-  @IsString()
-  @ApiProperty()
-  default?: string;
+	@IsOptional()
+	@ApiProperty({ default: false })
+	editable?: boolean;
 
-  @IsOptional()
-  @IsString()
-  @ApiProperty()
-  customStyles?: string;
+	@IsOptional()
+	@IsString()
+	@ApiProperty()
+	default?: string;
 
-  @IsOptional()
-  @ApiProperty()
-  @IsArray()
-  options?: string[];
+	@IsOptional()
+	@IsString()
+	@ApiProperty()
+	customStyles?: string;
+
+	@IsOptional()
+	@ApiProperty()
+	@IsArray()
+	options?: string[];
 }
