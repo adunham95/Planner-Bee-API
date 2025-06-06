@@ -19,11 +19,6 @@ export class CreateEcardComponentDto {
 	@IsString()
 	@IsOptional()
 	@ApiProperty()
-	partyBoxTemplateID: string;
-
-	@IsString()
-	@IsOptional()
-	@ApiProperty()
 	label?: string;
 
 	@IsOptional()

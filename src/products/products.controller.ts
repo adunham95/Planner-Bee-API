@@ -27,11 +27,6 @@ export class ProductsController {
 		return this.productsService.findECards();
 	}
 
-	@Get('party-boxes')
-	findPartyBoxes() {
-		return this.productsService.findPartyBoxes();
-	}
-
 	@Get()
 	findVisible() {
 		return this.productsService.findAvailable();

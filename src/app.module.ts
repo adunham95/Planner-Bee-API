@@ -23,65 +23,59 @@ import { ContactsModule } from './contacts/contacts.module';
 import { ProductsModule } from './products/products.module';
 import { OrdersModule } from './orders/orders.module';
 import { OrderProductsModule } from './order-products/order-products.module';
-import { PartyBoxTemplatesModule } from './party-box-templates/party-box-templates.module';
-import { PartyBoxSuppliesModule } from './party-box-supplies/party-box-supplies.module';
-import { StockModule } from './stock/stock.module';
 
 @Module({
-  imports: [
-    PrismaModule,
-    ArticlesModule,
-    UsersModule,
-    AuthModule,
-    EcardTemplatesModule,
-    EcardComponentsModule,
-    CategoryModule,
-    EcardsModule,
-    OptionItemsModule,
-    ShopModule,
-    StripeModule.forRootAsync(),
-    ConfigModule.forRoot(),
-    RecipientsModule,
-    MailModule,
-    MailerModule.forRoot({
-      transport: {
-        host: process.env.SMTP_HOST,
-        port: parseInt(process.env.SMTP_PORT || '2525'),
-        secure: false, // upgrade later with STARTTLS
-        auth: {
-          user: process.env.SMTP_USERNAME,
-          pass: process.env.SMTP_PASSWORD,
-        },
-      },
-      defaults: {
-        from: process.env.SMTP_FROM,
-      },
-      template: {
-        dir: process.cwd() + '/templates',
-        adapter: new PugAdapter(),
-        options: {
-          strict: true,
-        },
-      },
-    }),
-    BullModule.forRoot({
-      redis: {
-        host: process.env.REDIS_HOST,
-        port: parseInt(process.env.REDIS_PORT || '3000'),
-        username: process.env.REDIS_USERNAME,
-        password: process.env.REDIS_PASSWORD,
-      },
-    }),
-    ImagesModule,
-    ContactsModule,
-    ProductsModule,
-    OrdersModule,
-    OrderProductsModule,
-    PartyBoxTemplatesModule,
-    PartyBoxSuppliesModule,
-    StockModule,
-  ],
-  controllers: [AppController],
-  providers: [AppService],
+	imports: [
+		PrismaModule,
+		ArticlesModule,
+		UsersModule,
+		AuthModule,
+		EcardTemplatesModule,
+		EcardComponentsModule,
+		CategoryModule,
+		EcardsModule,
+		OptionItemsModule,
+		ShopModule,
+		StripeModule.forRootAsync(),
+		ConfigModule.forRoot(),
+		RecipientsModule,
+		MailModule,
+		MailerModule.forRoot({
+			transport: {
+				host: process.env.SMTP_HOST,
+				port: parseInt(process.env.SMTP_PORT || '2525'),
+				secure: false, // upgrade later with STARTTLS
+				auth: {
+					user: process.env.SMTP_USERNAME,
+					pass: process.env.SMTP_PASSWORD
+				}
+			},
+			defaults: {
+				from: process.env.SMTP_FROM
+			},
+			template: {
+				dir: process.cwd() + '/templates',
+				adapter: new PugAdapter(),
+				options: {
+					strict: true
+				}
+			}
+		}),
+		BullModule.forRoot({
+			redis: {
+				host: process.env.REDIS_HOST,
+				port: parseInt(process.env.REDIS_PORT || '3000'),
+				username: process.env.REDIS_USERNAME,
+				password: process.env.REDIS_PASSWORD
+			}
+		}),
+		ImagesModule,
+		ContactsModule,
+		ProductsModule,
+		OrdersModule,
+		OrderProductsModule
+	],
+	controllers: [AppController],
+	providers: [AppService]
 })
 export class AppModule {}

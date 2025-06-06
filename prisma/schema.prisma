@@ -79,8 +79,6 @@ model ECardComponent {
   ecardComponentID   String
   ecardID            String?
   ecard              ECardTemplate?    @relation(references: [id], fields: [ecardID], onDelete: Cascade)
-  partyBoxTemplateID String?
-  partyBox           PartyBoxTemplate? @relation(references: [id], fields: [partyBoxTemplateID])
   label              String?           @default("")
   editable           Boolean?          @default(false)
   default            String?           @default("")
@@ -121,8 +119,6 @@ model ECardOptionItem {
   eCardId        String?
   eCard          ECard?         @relation(references: [id], fields: [eCardId], onDelete: Cascade)
   name           String?
-  // partyBoxId String?
-  // partBox PartyBox? @relation(references: [id], fields: [partyBoxId])
   value          String
   key            String
   createdAt      DateTime       @default(now())
@@ -169,8 +165,6 @@ model Product {
   productType         String
   eCardTemplateSKU    String?
   eCardTemplate       ECardTemplate?    @relation(fields: [eCardTemplateSKU], references: [sku])
-  partyBoxTemplateSKU String?
-  partyBoxTemplate    PartyBoxTemplate? @relation(fields: [partyBoxTemplateSKU], references: [sku])
   categories          Category[]        @relation("ProductCategories")
   orderProducts       OrderProduct[]
 
@@ -200,30 +194,4 @@ model OrderProduct {
   quantity    Int     @default(1)
   eCardID     String? @unique
   eCard       ECard?  @relation(fields: [eCardID], references: [id])
-}
-
-model PartyBoxTemplate {
-  id              String             @id @default(uuid())
-  sku             String             @unique
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @default(now()) @updatedAt
-  supplies        PartyBoxSupplies[]
-  eCardComponents ECardComponent[]
-  product         Product[]
-}
-
-model PartyBoxSupplies {
-  id                 String           @id @default(uuid())
-  quantity           Int              @default(1)
-  partyBoxTemplateID String
-  partyBox           PartyBoxTemplate @relation(fields: [partyBoxTemplateID], references: [id])
-  stockID            String
-  stock              Stock            @relation(fields: [stockID], references: [id])
-}
-
-model Stock {
-  id            String             @id @default(uuid())
-  name          String
-  quantity      Int
-  partyBoxItems PartyBoxSupplies[]
 }
